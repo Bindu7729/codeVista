@@ -38,6 +38,31 @@ export const CODE_TEMPLATES: Record<string, Record<string, string>> = {
     python: `class TreeNode:\n    def __init__(self, val):\n        self.val = val\n        self.left = None\n        self.right = None\n\nroot = TreeNode(40)\nroot.left = TreeNode(20)\nroot.right = TreeNode(60)\nroot.left.left = TreeNode(10)\nroot.left.right = TreeNode(30)`,
     javascript: `class TreeNode {\n    constructor(val) {\n        this.val = val;\n        this.left = null;\n        this.right = null;\n    }\n}\n\nlet root = new TreeNode(40);\nroot.left = new TreeNode(20);\nroot.right = new TreeNode(60);\nroot.left.left = new TreeNode(10);\nroot.left.right = new TreeNode(30);`,
     java: `class TreeNode {\n    int val;\n    TreeNode left;\n    TreeNode right;\n    TreeNode(int val) {\n        this.val = val;\n    }\n}\n\nTreeNode root = new TreeNode(40);\nroot.left = new TreeNode(20);\nroot.right = new TreeNode(60);\nroot.left.left = new TreeNode(10);\nroot.left.right = new TreeNode(30);`
+  },
+  linear_search: {
+    python: `arr = [10, 25, 47, 63, 89, 99]\ntarget = 63\nfound_idx = -1\nfor i in range(len(arr)):\n    if arr[i] == target:\n        found_idx = i\n        print("Found target at index " + str(i))\n        break`,
+    javascript: `let arr = [10, 25, 47, 63, 89, 99];\nlet target = 63;\nlet found_idx = -1;\nfor (let i = 0; i < arr.length; i++) {\n    if (arr[i] === target) {\n        found_idx = i;\n        console.log("Found target at index " + i);\n        break;\n    }\n}`,
+    java: `int[] arr = {10, 25, 47, 63, 89, 99};\nint target = 63;\nint found_idx = -1;\nfor (int i = 0; i < arr.length; i++) {\n    if (arr[i] == target) {\n        found_idx = i;\n        System.out.println("Found target at index " + i);\n        break;\n    }\n}`
+  },
+  two_pointer: {
+    python: `arr = [1, 2, 3, 4, 5, 6]\nleft = 0\nright = len(arr) - 1\nwhile left < right:\n    temp = arr[left]\n    arr[left] = arr[right]\n    arr[right] = temp\n    left = left + 1\n    right = right - 1`,
+    javascript: `let arr = [1, 2, 3, 4, 5, 6];\nlet left = 0;\nlet right = arr.length - 1;\nwhile (left < right) {\n    let temp = arr[left];\n    arr[left] = arr[right];\n    arr[right] = temp;\n    left = left + 1;\n    right = right - 1;\n}`,
+    java: `int[] arr = {1, 2, 3, 4, 5, 6};\nint left = 0;\nint right = arr.length - 1;\nwhile (left < right) {\n    int temp = arr[left];\n    arr[left] = arr[right];\n    arr[right] = temp;\n    left = left + 1;\n    right = right - 1;\n}`
+  },
+  selection_sort: {
+    python: `arr = [64, 25, 12, 22, 11]\nn = len(arr)\nfor i in range(n):\n    min_idx = i\n    for j in range(i + 1, n):\n        if arr[j] < arr[min_idx]:\n            min_idx = j\n    temp = arr[i]\n    arr[i] = arr[min_idx]\n    arr[min_idx] = temp`,
+    javascript: `let arr = [64, 25, 12, 22, 11];\nlet n = arr.length;\nfor (let i = 0; i < n; i++) {\n    let min_idx = i;\n    for (let j = i + 1; j < n; j++) {\n        if (arr[j] < arr[min_idx]) {\n            min_idx = j;\n        }\n    }\n    let temp = arr[i];\n    arr[i] = arr[min_idx];\n    arr[min_idx] = temp;\n}`,
+    java: `int[] arr = {64, 25, 12, 22, 11};\nint n = arr.length;\nfor (int i = 0; i < n; i++) {\n    int min_idx = i;\n    for (int j = i + 1; j < n; j++) {\n        if (arr[j] < arr[min_idx]) {\n            min_idx = j;\n        }\n    }\n    int temp = arr[i];\n    arr[i] = arr[min_idx];\n    arr[min_idx] = temp;\n}`
+  },
+  stack_ops: {
+    python: `stack = []\nstack.append(10)\nstack.append(20)\nstack.append(30)\nstack.pop()`,
+    javascript: `let stack = [];\nstack.push(10);\nstack.push(20);\nstack.push(30);\nstack.pop();`,
+    java: `ArrayList<Integer> stack = new ArrayList<>();\nstack.add(10);\nstack.add(20);\nstack.add(30);`
+  },
+  queue_ops: {
+    python: `queue = []\nqueue.append(100)\nqueue.append(200)\nqueue.append(300)\nqueue.shift()`,
+    javascript: `let queue = [];\nqueue.push(100);\nqueue.push(200);\nqueue.push(300);\nqueue.shift();`,
+    java: `LinkedList<Integer> queue = new LinkedList<>();\nqueue.add(100);\nqueue.add(200);\nqueue.add(300);`
   }
 };
 
