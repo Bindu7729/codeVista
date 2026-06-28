@@ -3,20 +3,9 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/features/**/*.{js,ts,jsx,tsx}",
-    "./src/layouts/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-      },
-      animation: {
-        fadeIn: 'fadeIn 0.2s ease-out',
-      },
       colors: {
         primary: {
           DEFAULT: '#6366f1',
@@ -45,16 +34,6 @@ export default {
         'surface-container-low': '#0a0e18',
         'surface-container-lowest': '#060910',
         'surface-container-high': '#111625',
-        background: {
-          DEFAULT: '#070b13',
-          card: '#0b0f19',
-          sidebar: '#0b0f19',
-        },
-        accent: {
-          purple: '#6366f1',
-          teal: '#2dd4bf',
-          indigo: '#4f46e5',
-        }
       }
     },
   },
