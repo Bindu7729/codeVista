@@ -1,29 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Code2, 
   Layers, 
-  Cpu, 
-  Terminal, 
   Play, 
-  Settings, 
   ChevronRight, 
   Star,
-  Users,
-  Activity,
   Flame,
   Globe,
-  Bug
+  Bug,
+  Sparkles,
+  Terminal,
+  Activity
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Trigger professional initial splash loading screen
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   const stats = [
-    { label: "Code Steps Traced", value: "24.8M+" },
-    { label: "Active Developers", value: "180K+" },
-    { label: "Visualized Algorithms", value: "150+" },
-    { label: "GitHub Stars", value: "14.2K+" }
+    { label: "Students Mastered", value: "1,000+" },
+    { label: "Algorithms Built", value: "500+" },
+    { label: "Languages Supported", value: "8" },
+    { label: "Trace Pipelines", value: "Real-Time" }
   ];
 
   const languages = [
@@ -44,24 +49,93 @@ export default function LandingPage() {
     { name: "Dijkstra's Pathfinding", category: "Graphs", desc: "Visualize shortest path exploration across node networks." }
   ];
 
+  // Floating binary particles helper list
+  const binaryParticles = [
+    { text: "0", left: "10%", delay: 0, duration: 6 },
+    { text: "1", left: "25%", delay: 2, duration: 8 },
+    { text: "{ }", left: "40%", delay: 1, duration: 7 },
+    { text: "0", left: "60%", delay: 3, duration: 9 },
+    { text: "1", left: "75%", delay: 0.5, duration: 6.5 },
+    { text: "[ ]", left: "90%", delay: 2.5, duration: 8.5 }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] font-sans selection:bg-[#06B6D4]/30 overflow-x-hidden text-left">
+    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] font-sans selection:bg-[#06B6D4]/30 overflow-x-hidden text-left relative">
       
-      {/* Header section */}
-      <header className="border-b border-slate-800 bg-[#0F172A]/90 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-br from-[#2563EB] to-[#7C3AED] p-2 rounded-xl text-white shadow-md">
-              <Code2 className="w-5 h-5" />
+      {/* ----------------------------------------------------
+          1. PROFESSIONAL SPLASH INITIAL LOADING SCREEN
+          ---------------------------------------------------- */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 bg-[#0F172A] z-[9999] flex flex-col items-center justify-center space-y-6"
+          >
+            {/* Loading Logo Indicator */}
+            <div className="relative">
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+                className="w-16 h-16 rounded-full border-4 border-blue-500/20 border-t-blue-500"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Terminal className="w-6 h-6 text-blue-400" />
+              </div>
             </div>
-            <span className="text-xl font-bold tracking-tight text-white cursor-pointer font-sans">
+
+            <div className="text-center space-y-1">
+              <h3 className="font-bold text-white tracking-widest text-sm uppercase">CodeVista</h3>
+              <p className="text-[10px] text-slate-500 font-mono tracking-widest animate-pulse">Initializing trace pipelines...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ----------------------------------------------------
+          2. GLOWING BACKGROUND GRID & PARTICLES
+          ---------------------------------------------------- */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b12_1px,transparent_1px),linear-gradient(to_bottom,#1e293b12_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none -z-20" />
+      
+      {/* Rising Floating binary/data structure particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        {binaryParticles.map((part, pIdx) => (
+          <motion.span
+            key={pIdx}
+            initial={{ y: "110vh", opacity: 0 }}
+            animate={{ y: "-10vh", opacity: [0, 0.4, 0.4, 0] }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: part.duration, 
+              delay: part.delay, 
+              ease: "linear" 
+            }}
+            className="absolute font-mono text-slate-700 text-xs font-bold"
+            style={{ left: part.left }}
+          >
+            {part.text}
+          </motion.span>
+        ))}
+      </div>
+
+      {/* Header section */}
+      <header className="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          
+          {/* Logo with custom SVG design */}
+          <div className="flex items-center space-x-2.5">
+            <div className="bg-gradient-to-br from-[#2563EB] to-[#7C3AED] p-2 rounded-xl text-white shadow-md relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-75 transition duration-300" />
+              <Terminal className="w-5 h-5 relative z-10" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white cursor-pointer font-sans bg-clip-text bg-gradient-to-r from-white to-slate-200">
               CodeVista
             </span>
           </div>
 
           {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-[#94A3B8]">
+          <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-[#94A3B8]">
             <a href="#features" className="hover:text-white transition-colors duration-200">Features</a>
             <a href="#languages" className="hover:text-white transition-colors duration-200">Languages</a>
             <a href="#how-it-works" className="hover:text-white transition-colors duration-200">How It Works</a>
@@ -76,9 +150,9 @@ export default function LandingPage() {
             </Link>
             <Link
               to="/editor"
-              className="bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white hover:opacity-95 px-5 py-2.5 rounded-lg transition-all duration-200 shadow-md text-xs font-semibold uppercase tracking-wider"
+              className="bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white hover:opacity-95 px-5 py-2.5 rounded-lg transition-all duration-200 shadow-md text-xs font-semibold uppercase tracking-wider relative group active:scale-95 overflow-hidden"
             >
-              Start Visualizing
+              <span className="relative z-10">Start Visualizing</span>
             </Link>
           </div>
 
@@ -121,44 +195,69 @@ export default function LandingPage() {
       </header>
 
       {/* Hero section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-20 md:py-32 relative">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#2563EB]/10 to-[#7C3AED]/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-20 md:py-32 relative text-center">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-br from-[#2563EB]/15 to-[#7C3AED]/15 rounded-full blur-[120px] -z-20 pointer-events-none"></div>
         
-        <div className="text-center space-y-8 max-w-4xl mx-auto">
-          <div className="inline-flex items-center space-x-2 bg-[#1E293B] border border-slate-800 rounded-full px-4 py-1.5 shadow-sm">
-            <Flame className="w-4 h-4 text-[#06B6D4] animate-pulse" />
+        <div className="space-y-8 max-w-4xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center space-x-2 bg-[#1E293B] border border-slate-800 rounded-full px-4.5 py-1.5 shadow-sm"
+          >
+            <Activity className="w-3.5 h-3.5 text-[#06B6D4]" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#06B6D4] font-mono">
-              Next-Gen Program Visualization Engine
+              PREMIUM INTERACTIVE TRACE ENGINE
             </span>
-          </div>
+          </motion.div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.05]">
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.05]"
+          >
             Visualize. Understand. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#7C3AED] to-[#06B6D4]">
               Master Programming.
             </span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-[#94A3B8] text-base sm:text-xl leading-relaxed max-w-2xl mx-auto font-medium">
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="text-[#94A3B8] text-base sm:text-xl leading-relaxed max-w-2xl mx-auto font-medium"
+          >
             Transform source code into interactive visual experiences and understand how algorithms work internally. Watch call stacks, heap states, and variables map in real-time.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Link
-              to="/editor"
-              className="bg-gradient-to-r from-[#2563EB] to-[#7C3AED] hover:opacity-95 text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 transform active:scale-95 shadow-lg shadow-blue-500/10"
-            >
-              Start Visualizing
-            </Link>
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="flex flex-wrap items-center justify-center gap-4 pt-4"
+          >
+            {/* Magnetic-like hover transition buttons */}
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/editor"
+                className="bg-gradient-to-r from-[#2563EB] to-[#7C3AED] hover:opacity-95 text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg shadow-blue-500/10 block"
+              >
+                Start Visualizing
+              </Link>
+            </motion.div>
 
-            <a
-              href="#showcase"
-              className="flex items-center space-x-2 bg-[#1E293B] border border-slate-800 hover:border-slate-700 hover:bg-slate-800 text-[#F8FAFC] px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200"
-            >
-              <span>Explore Algorithms</span>
-              <ChevronRight className="w-4 h-4" />
-            </a>
-          </div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <a
+                href="#showcase"
+                className="flex items-center space-x-2 bg-[#1E293B] border border-slate-800 hover:border-slate-700 hover:bg-slate-800 text-[#F8FAFC] px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all block"
+              >
+                <span>Explore Algorithms</span>
+                <ChevronRight className="w-4 h-4" />
+              </a>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -167,10 +266,17 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, idx) => (
-              <div key={idx} className="space-y-1">
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: idx * 0.08 }}
+                className="space-y-1"
+              >
                 <p className="text-3xl sm:text-5xl font-black text-white font-mono bg-clip-text bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-transparent">{stat.value}</p>
                 <p className="text-xs sm:text-sm font-semibold text-[#94A3B8] tracking-wide uppercase">{stat.label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -186,7 +292,10 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            <div className="bg-[#1E293B] border border-slate-800 hover:border-[#2563EB]/40 rounded-2xl p-8 transition-all duration-300 hover:translate-y-[-4px] shadow-sm">
+            <motion.div 
+              whileHover={{ y: -4, borderColor: "rgba(37,99,235,0.4)" }}
+              className="bg-[#1E293B] border border-slate-800 rounded-2xl p-8 transition-all shadow-sm"
+            >
               <div className="bg-[#2563EB]/10 p-3 rounded-xl w-fit text-[#2563EB] mb-6">
                 <Play className="w-6 h-6 fill-current" />
               </div>
@@ -194,9 +303,12 @@ export default function LandingPage() {
               <p className="text-[#94A3B8] text-sm leading-relaxed">
                 Execute code line-by-line. Animate parameters, track indices, and follow control structures live.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-[#1E293B] border border-slate-800 hover:border-[#7C3AED]/40 rounded-2xl p-8 transition-all duration-300 hover:translate-y-[-4px] shadow-sm">
+            <motion.div 
+              whileHover={{ y: -4, borderColor: "rgba(124,58,237,0.4)" }}
+              className="bg-[#1E293B] border border-slate-800 rounded-2xl p-8 transition-all shadow-sm"
+            >
               <div className="bg-[#7C3AED]/10 p-3 rounded-xl w-fit text-[#7C3AED] mb-6">
                 <Bug className="w-6 h-6" />
               </div>
@@ -204,9 +316,12 @@ export default function LandingPage() {
               <p className="text-[#94A3B8] text-sm leading-relaxed">
                 Step forward, backward, or auto-play. Scrub through execution logs like an absolute media playback timeline.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-[#1E293B] border border-slate-800 hover:border-[#06B6D4]/40 rounded-2xl p-8 transition-all duration-300 hover:translate-y-[-4px] shadow-sm">
+            <motion.div 
+              whileHover={{ y: -4, borderColor: "rgba(6,182,212,0.4)" }}
+              className="bg-[#1E293B] border border-slate-800 rounded-2xl p-8 transition-all shadow-sm"
+            >
               <div className="bg-[#06B6D4]/10 p-3 rounded-xl w-fit text-[#06B6D4] mb-6">
                 <Layers className="w-6 h-6" />
               </div>
@@ -214,7 +329,7 @@ export default function LandingPage() {
               <p className="text-[#94A3B8] text-sm leading-relaxed">
                 Inspect local scope stack variables and heap reference object graphs as data updates.
               </p>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -229,10 +344,14 @@ export default function LandingPage() {
           </div>
           <div className="flex flex-wrap justify-center gap-4">
             {languages.map((lang, idx) => (
-              <div key={idx} className="bg-[#1E293B] border border-slate-800 px-6 py-4 rounded-xl flex items-center gap-3">
+              <motion.div 
+                key={idx} 
+                whileHover={{ scale: 1.05 }}
+                className="bg-[#1E293B] border border-slate-800 px-6 py-4 rounded-xl flex items-center gap-3 cursor-default"
+              >
                 <Globe className={`w-4 h-4 ${lang.color}`} />
                 <span className="font-mono text-sm font-bold text-white">{lang.name}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -251,7 +370,7 @@ export default function LandingPage() {
               <div className="text-4xl font-black text-[#2563EB] font-mono">01</div>
               <h3 className="text-xl font-bold text-white">Write or Paste Code</h3>
               <p className="text-[#94A3B8] text-sm leading-relaxed">
-                Choose C, C++, Python, or JavaScript. Select an algorithm template or write your custom code snippet.
+                Choose Python, JS, or Java. Select an algorithm template or write your custom code snippet.
               </p>
             </div>
             <div className="space-y-4 text-center md:text-left">
@@ -282,7 +401,11 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {showcaseAlgorithms.map((algo, idx) => (
-              <div key={idx} className="bg-[#1E293B] border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+              <motion.div 
+                key={idx} 
+                whileHover={{ y: -3 }}
+                className="bg-[#1E293B] border border-slate-800 p-6 rounded-2xl flex flex-col justify-between"
+              >
                 <div className="space-y-3">
                   <span className="text-[9px] uppercase font-mono font-bold tracking-widest text-[#06B6D4] bg-[#06B6D4]/10 px-2 py-0.5 rounded">
                     {algo.category}
@@ -294,59 +417,8 @@ export default function LandingPage() {
                   <span>Open in Editor</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
-              </div>
+              </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-24 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 space-y-16">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Impacting Engineers Worldwide</h2>
-            <p className="text-[#94A3B8] text-sm sm:text-base">Hear what computer science students and senior software developers think.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-[#1E293B] border border-slate-800 p-8 rounded-2xl space-y-6">
-              <div className="flex gap-1 text-amber-400">
-                <Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" />
-              </div>
-              <p className="text-[#F8FAFC] text-sm italic leading-relaxed">
-                "CodeVista completely changed how I prep for FAANG interviews. Seeing recursion trees unfold visually helped me solve dynamic programming challenges instantly."
-              </p>
-              <div>
-                <p className="text-sm font-bold text-white">Sarah Jenkins</p>
-                <p className="text-xs text-[#94A3B8]">M.S. in Computer Science at Stanford</p>
-              </div>
-            </div>
-
-            <div className="bg-[#1E293B] border border-slate-800 p-8 rounded-2xl space-y-6">
-              <div className="flex gap-1 text-amber-400">
-                <Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" />
-              </div>
-              <p className="text-[#F8FAFC] text-sm italic leading-relaxed">
-                "As an educator, explaining pointers and references in C++ was always a hurdle. This visual stack and heap memory frame does the heavy lifting for me."
-              </p>
-              <div>
-                <p className="text-sm font-bold text-white">Dr. Alex Chen</p>
-                <p className="text-xs text-[#94A3B8]">CS Professor at MIT</p>
-              </div>
-            </div>
-
-            <div className="bg-[#1E293B] border border-slate-800 p-8 rounded-2xl space-y-6">
-              <div className="flex gap-1 text-amber-400">
-                <Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" /><Star className="w-4 h-4 fill-current" />
-              </div>
-              <p className="text-[#F8FAFC] text-sm italic leading-relaxed">
-                "Bubble sort and Dijkstra's pathfinding animations are so fluid. I recommend this platform to anyone studying data structures and algorithms."
-              </p>
-              <div>
-                <p className="text-sm font-bold text-white">David Miller</p>
-                <p className="text-xs text-[#94A3B8]">Senior Engineer at Netflix</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -359,7 +431,7 @@ export default function LandingPage() {
             <p className="text-[#94A3B8] leading-relaxed max-w-sm">
               Visualize code, analyze call memory stacks, and master complex algorithms with zero friction.
             </p>
-            <p className="text-slate-500">
+            <p className="text-slate-500 font-mono text-[10px]">
               &copy; 2026 CodeVista Inc. All rights reserved.
             </p>
           </div>
