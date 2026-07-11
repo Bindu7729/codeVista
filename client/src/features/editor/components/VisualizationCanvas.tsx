@@ -1,5 +1,5 @@
 import { useExecutionStore } from '../store/useExecutionStore';
-import { ZoomIn, ZoomOut, Maximize2, Terminal } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Terminal, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function VisualizationCanvas() {
@@ -7,12 +7,24 @@ export default function VisualizationCanvas() {
     timeline,
     currentStepIndex,
     editorZoomScale,
-    setZoomScale
+    setZoomScale,
+    language
   } = useExecutionStore();
 
   const currentStep = timeline[currentStepIndex];
 
   const renderWidget = () => {
+    const isSupported = ['python', 'javascript', 'java'].includes(language);
+    if (!isSupported) {
+      return (
+        <div className="p-6 text-center space-y-2 max-w-xs text-slate-400 font-sans">
+          <Sparkles className="w-8 h-8 text-blue-400 mx-auto animate-pulse" />
+          <h4 className="font-bold text-white text-sm">Coming Soon</h4>
+          <p className="text-xs">Visualization for this language is coming soon. Please select Python, JavaScript, or Java.</p>
+        </div>
+      );
+    }
+
     if (!currentStep || !currentStep.widgetData) {
       return (
         <div className="p-6 text-center space-y-2 max-w-xs text-slate-500 animate-pulse font-sans">
