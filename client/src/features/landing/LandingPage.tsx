@@ -12,7 +12,8 @@ import {
   Users,
   Activity,
   Flame,
-  Globe
+  Globe,
+  Bug
 } from 'lucide-react';
 
 export default function LandingPage() {
