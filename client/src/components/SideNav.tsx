@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from './Icon';
+import { motion } from 'framer-motion';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -56,8 +57,17 @@ export function AppShell({ children }: AppShellProps) {
       </aside>
 
       {/* THIS IS THE CRITICAL FIX: DYNAMICALLY RENDER THE ACTIVE PAGE */}
-      <main className="flex-1 overflow-y-auto bg-[#070b13] relative">
-        {children}
+      <main className="flex-1 overflow-y-auto bg-[#0F172A] relative">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="min-h-full"
+        >
+          {children}
+        </motion.div>
       </main>
 
     </div>

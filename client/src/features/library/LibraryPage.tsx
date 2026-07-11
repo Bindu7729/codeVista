@@ -9,6 +9,7 @@ import {
   PlayCircle, 
   CheckCircle2 
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const LIBRARY_ALGORITHMS = [
   {
@@ -268,10 +269,10 @@ export default function LibraryPage() {
 
   return (
     <AppShell>
-      <div className="min-h-screen bg-[#070b13] text-slate-100 p-6 md:p-10 text-left relative overflow-y-auto">
+      <div className="min-h-screen bg-[#0F172A] text-slate-100 p-6 md:p-10 text-left relative overflow-y-auto">
         
         {feedback && (
-          <div className="fixed bottom-6 right-6 z-50 bg-[#110e25] border border-purple-500/40 text-slate-100 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+          <div className="fixed bottom-6 right-6 z-50 bg-[#1E293B] border border-blue-500/40 text-slate-100 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
             <CheckCircle2 className="text-emerald-400 w-5 h-5" />
             <div className="text-sm font-medium">{feedback}</div>
           </div>
@@ -291,13 +292,17 @@ export default function LibraryPage() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {LIBRARY_ALGORITHMS.map((algo) => (
-                <div 
+              {LIBRARY_ALGORITHMS.map((algo, idx) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.08 }}
+                  whileHover={{ scale: 1.015 }}
                   key={algo.id}
-                  className="bg-[#0b0f19] border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-purple-500/30 transition-all duration-300 group shadow-xl"
+                  className="bg-[#1E293B] border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-blue-500/30 transition-all duration-300 group shadow-xl"
                 >
-                  <div className={`h-40 bg-gradient-to-br ${algo.gradient} flex items-center justify-center border-b border-white/[0.05] relative`}>
-                    <div className="p-4 rounded-full bg-slate-950/50 border border-white/5 relative z-10 group-hover:scale-110 transition-transform duration-300">
+                  <div className={`h-40 bg-gradient-to-br ${algo.gradient} flex items-center justify-center border-b border-slate-800/40 relative`}>
+                    <div className="p-4 rounded-full bg-slate-950/50 border border-slate-800/40 relative z-10 group-hover:scale-110 transition-transform duration-300">
                       {algo.icon}
                     </div>
                   </div>
@@ -305,7 +310,7 @@ export default function LibraryPage() {
                   <div className="p-5 flex-grow flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between gap-4 mb-2">
-                        <h3 className="font-bold text-lg text-white group-hover:text-purple-400 transition-colors">{algo.title}</h3>
+                        <h3 className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">{algo.title}</h3>
                         <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border tracking-wider uppercase ${algo.difficultyColor}`}>
                           {algo.difficulty}
                         </span>
@@ -315,7 +320,7 @@ export default function LibraryPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-white/[0.04] pt-4 mt-2">
+                    <div className="flex items-center justify-between border-t border-slate-800/40 pt-4 mt-2">
                       <span className="font-mono text-xs text-sky-400 font-medium">{algo.complexity}</span>
                       <button
                         onClick={() => {
@@ -323,13 +328,13 @@ export default function LibraryPage() {
                           if (algo.id === 'binary-search') handleBsReset();
                           if (algo.id === 'dijkstra') resetDijkstra();
                         }}
-                        className="text-purple-400 group-hover:text-purple-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all"
+                        className="text-blue-400 group-hover:text-blue-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all"
                       >
                         Explore Tracers →
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </>

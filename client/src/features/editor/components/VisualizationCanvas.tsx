@@ -25,11 +25,22 @@ export default function VisualizationCanvas() {
       );
     }
 
+    const hasAnyWidget = timeline.some(step => step.widgetData !== undefined);
+    if (timeline.length > 1 && !hasAnyWidget) {
+      return (
+        <div className="p-6 text-center space-y-2 max-w-xs text-slate-400 font-sans">
+          <Terminal className="w-8 h-8 text-slate-500 mx-auto" />
+          <h4 className="font-bold text-white text-sm">No Visualization Data</h4>
+          <p className="text-xs">No visualization data generated for this code. Define an array (e.g., <code>arr = [5, 2]</code>), a list, stack, queue, or tree node to begin animating.</p>
+        </div>
+      );
+    }
+
     if (!currentStep || !currentStep.widgetData) {
       return (
-        <div className="p-6 text-center space-y-2 max-w-xs text-slate-500 animate-pulse font-sans">
-          <Terminal className="w-7 h-7 text-slate-600 mx-auto" />
-          <p className="text-xs font-mono">Staging trace thread active. Run code or step next to propagate visual structure animations.</p>
+        <div className="p-6 text-center space-y-2 max-w-xs text-[#94A3B8] font-sans">
+          <Terminal className="w-7 h-7 text-slate-500 mx-auto animate-pulse" />
+          <p className="text-xs font-mono">Trace thread active. Step next to propagate visual structure animations.</p>
         </div>
       );
     }
