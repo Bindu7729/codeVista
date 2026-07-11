@@ -17,11 +17,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [scrollY, setScrollY] = useState(0);
 
   // Trigger professional initial splash loading screen
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Track mouse coordinates for premium spotlight hover effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Track scroll position for subtle parallax elements
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const stats = [
@@ -47,16 +67,6 @@ export default function LandingPage() {
     { name: "Binary Search", category: "Searching", desc: "Animate left, right, and mid markers as search space halves." },
     { name: "BST Traversal", category: "Trees", desc: "Follow recursion paths as pre-order, in-order, or post-order tree steps execute." },
     { name: "Dijkstra's Pathfinding", category: "Graphs", desc: "Visualize shortest path exploration across node networks." }
-  ];
-
-  // Floating binary particles helper list
-  const binaryParticles = [
-    { text: "0", left: "10%", delay: 0, duration: 6 },
-    { text: "1", left: "25%", delay: 2, duration: 8 },
-    { text: "{ }", left: "40%", delay: 1, duration: 7 },
-    { text: "0", left: "60%", delay: 3, duration: 9 },
-    { text: "1", left: "75%", delay: 0.5, duration: 6.5 },
-    { text: "[ ]", left: "90%", delay: 2.5, duration: 8.5 }
   ];
 
   return (
@@ -98,26 +108,13 @@ export default function LandingPage() {
           ---------------------------------------------------- */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b12_1px,transparent_1px),linear-gradient(to_bottom,#1e293b12_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none -z-20" />
       
-      {/* Rising Floating binary/data structure particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        {binaryParticles.map((part, pIdx) => (
-          <motion.span
-            key={pIdx}
-            initial={{ y: "110vh", opacity: 0 }}
-            animate={{ y: "-10vh", opacity: [0, 0.4, 0.4, 0] }}
-            transition={{ 
-              repeat: Infinity, 
-              duration: part.duration, 
-              delay: part.delay, 
-              ease: "linear" 
-            }}
-            className="absolute font-mono text-slate-700 text-xs font-bold"
-            style={{ left: part.left }}
-          >
-            {part.text}
-          </motion.span>
-        ))}
-      </div>
+      {/* Interactive mouse spotlight glow effect */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 hidden md:block"
+        style={{
+          background: `radial-gradient(550px at ${mousePos.x}px ${mousePos.y + scrollY}px, rgba(37, 99, 235, 0.05), transparent 80%)`
+        }}
+      />
 
       {/* Header section */}
       <header className="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
@@ -194,11 +191,88 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* Hero section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-20 md:py-32 relative text-center">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-br from-[#2563EB]/15 to-[#7C3AED]/15 rounded-full blur-[120px] -z-20 pointer-events-none"></div>
+      {/* Hero section with floating shapes, snippets, and graph illustrations */}
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-20 md:py-32 relative text-center min-h-[580px] flex items-center justify-center">
         
-        <div className="space-y-8 max-w-4xl mx-auto">
+        {/* Animated ambient gradient glow directly behind heading */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-gradient-to-r from-[#2563EB]/15 via-[#7C3AED]/10 to-[#06B6D4]/15 rounded-full blur-[100px] -z-20 pointer-events-none animate-pulse duration-[6000ms]"></div>
+        
+        {/* Parallax floating visual nodes & SVGs in background */}
+        <div 
+          className="absolute inset-0 pointer-events-none -z-10 overflow-hidden"
+          style={{ transform: `translateY(${scrollY * 0.12}px)` }}
+        >
+          {/* Binary digits particles */}
+          <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="absolute top-16 left-[15%] text-slate-800 font-mono text-[11px] font-black select-none">010110</motion.div>
+          <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }} className="absolute bottom-16 right-[15%] text-slate-800 font-mono text-[11px] font-black select-none">101001</motion.div>
+
+          {/* Floating code snippets */}
+          <motion.div 
+            animate={{ y: [0, -12, 0] }} 
+            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+            className="absolute top-28 right-[12%] bg-[#1E293B]/20 border border-slate-800/40 rounded-lg p-2.5 font-mono text-[10px] text-slate-500 text-left select-none hidden lg:block"
+          >
+            <span className="text-[#2563EB]">let</span> mid = (low + high) / 2;
+          </motion.div>
+
+          <motion.div 
+            animate={{ y: [0, 12, 0] }} 
+            transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-28 left-[10%] bg-[#1E293B]/20 border border-slate-800/40 rounded-lg p-2.5 font-mono text-[10px] text-slate-500 text-left select-none hidden lg:block"
+          >
+            <span className="text-[#7C3AED]">node.next</span> = head;
+          </motion.div>
+
+          {/* SVG Illustration: Tree */}
+          <motion.svg 
+            animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
+            transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+            className="absolute top-24 left-[8%] w-16 h-16 text-slate-700/40 hidden md:block" viewBox="0 0 100 80" fill="none" stroke="currentColor" strokeWidth="2"
+          >
+            <circle cx="50" cy="15" r="8" />
+            <circle cx="25" cy="45" r="8" />
+            <circle cx="75" cy="45" r="8" />
+            <line x1="45" y1="21" x2="30" y2="39" />
+            <line x1="55" y1="21" x2="70" y2="39" />
+          </motion.svg>
+
+          {/* SVG Illustration: Graph Nodes */}
+          <motion.svg 
+            animate={{ y: [0, 8, 0], rotate: [0, -2, 0] }}
+            transition={{ repeat: Infinity, duration: 9, ease: "easeInOut", delay: 0.5 }}
+            className="absolute bottom-20 right-[8%] w-16 h-16 text-slate-700/40 hidden md:block" viewBox="0 0 100 80" fill="none" stroke="currentColor" strokeWidth="2"
+          >
+            <circle cx="20" cy="40" r="7" />
+            <circle cx="80" cy="20" r="7" />
+            <circle cx="60" cy="60" r="7" />
+            <line x1="27" y1="37" x2="73" y2="23" />
+            <line x1="27" y1="43" x2="53" y2="57" />
+            <line x1="75" y1="26" x2="65" y2="54" />
+          </motion.svg>
+
+          {/* SVG Illustration: Array Blocks */}
+          <motion.svg 
+            animate={{ y: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            className="absolute top-48 left-[75%] w-16 h-8 text-slate-700/40 hidden lg:block" viewBox="0 0 120 30" fill="none" stroke="currentColor" strokeWidth="2"
+          >
+            <rect x="5" y="5" width="20" height="20" rx="3" />
+            <rect x="30" y="5" width="20" height="20" rx="3" />
+            <rect x="55" y="5" width="20" height="20" rx="3" />
+            <rect x="80" y="5" width="20" height="20" rx="3" />
+          </motion.svg>
+
+          {/* Code brackets {} */}
+          <motion.span 
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 0.8 }}
+            className="absolute top-80 right-[25%] font-mono text-3xl font-black text-slate-800/35 select-none hidden md:block"
+          >
+            &#123; &#125;
+          </motion.span>
+        </div>
+
+        <div className="space-y-8 max-w-4xl mx-auto z-10 relative">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -211,34 +285,42 @@ export default function LandingPage() {
             </span>
           </motion.div>
 
+          {/* Headings with smooth loading text reveals and subtle float loops */}
           <motion.h1 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.05]"
           >
-            Visualize. Understand. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#7C3AED] to-[#06B6D4]">
+            <motion.span 
+              animate={{ y: [0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="inline-block"
+            >
+              Visualize. Understand.
+            </motion.span>
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#7C3AED] to-[#06B6D4] inline-block mt-2">
               Master Programming.
             </span>
           </motion.h1>
 
+          {/* Subtitle with exact text required */}
           <motion.p 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
             className="text-[#94A3B8] text-base sm:text-xl leading-relaxed max-w-2xl mx-auto font-medium"
           >
-            Transform source code into interactive visual experiences and understand how algorithms work internally. Watch call stacks, heap states, and variables map in real-time.
+            Transform source code into interactive visual experiences and understand programming like never before.
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
             className="flex flex-wrap items-center justify-center gap-4 pt-4"
           >
-            {/* Magnetic-like hover transition buttons */}
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/editor"
