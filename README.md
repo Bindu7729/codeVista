@@ -1,37 +1,57 @@
-# CodeVista — Interactive Code Visualizer & SaaS Platform
+# CodeVista — Interactive Programming Visualization Monorepo
 
-CodeVista is a premium developer platform that visualizes execution flow, enabling programmers to grasp complex logic instantly. Write code in the editor, step through its execution line-by-line, and watch the call stack, heap memory, and data flow update dynamically.
-
----
-
-## 🚀 Key Features
-
-* **Interactive AST & Program Flow Visualization:** Parses code structure and builds a dynamic visual flow graph on the fly.
-* **Live Step-by-Step Debugger:** Jump forward, step backward, or auto-play through execution lines.
-* **Stack & Heap Memory Inspector:** Telemetry representations of call stack variable registries and heap pointer allocations with fluid layout animations.
-* **Terminal Console Output:** Simulated stdout terminal showing live output streams (e.g. print statements).
-* **Premium SaaS Experience:** A modern developer environment built with curated colors, smooth transitions, and high-fidelity layouts.
+CodeVista is a professional algorithm and program visualization platform. It allows developers to select from 8 programming languages, paste custom code, and animate data structures (Arrays, Linked Lists, Stacks, Queues, Binary Trees, and Graphs) step-by-step.
 
 ---
 
-## 🛠️ Technology Stack
+## 📂 Repository Structure
 
-* **Core UI Framework:** React (with TypeScript)
-* **Build Engine:** Vite
-* **Styling & Theme:** Tailwind CSS & PostCSS
-* **Global State Store:** Zustand
-* **Animations:** Framer Motion
-* **Iconography:** Lucide React
+The project is structured as a clean monorepo:
+
+```
+codeVista/
+├── client/              # Frontend React + TypeScript application
+│   ├── public/          # Static assets
+│   ├── src/             # Component features (Visual Editor, Landing, Dashboard)
+│   ├── package.json     # Client dependencies (React, Zustand, Framer Motion)
+│   ├── vite.config.ts   # Vite bundler config
+│   └── tsconfig.json    # TypeScript config
+│
+├── server/              # Backend Express application
+│   ├── src/             # Execution status endpoints
+│   ├── package.json     # Server dependencies (Express, CORS, Dotenv)
+│   └── .env.example     # Configuration environment template
+│
+├── docs/                # API and platform documentation
+├── README.md            # Installation & deployment guides
+├── .gitignore           # Git ignore filters
+└── package.json         # Monorepo workspaces and script runner
+```
 
 ---
 
-## 📦 Getting Started
+## 🚀 Core Features
+
+1. **Multi-language Selector:** Support for **C, C++, Java, Python, JavaScript, TypeScript, C#, and Go**.
+2. **Step-by-Step Tracing:** Play, Pause, Resume, Step Forward, Step Backward, or change playback speed.
+3. **Dynamic Memory Scope:** Interactive visualization of call stack scopes and heap allocations.
+4. **Data Structure Animations:**
+   * **Arrays & Strings:** Highlight indices, swaps, and partition markers.
+   * **Linked Lists:** Chains of node blocks connected by dynamic arrows.
+   * **Stacks & Queues:** Dynamic pushing/popping and queuing visualization.
+   * **Binary Trees & BSTs:** Hierarchical tree graphs mapped dynamically.
+   * **Graphs:** Network vertex nodes and edges with live traversal highlighting.
+5. **Console Output Terminal:** Live `stdout` printing for program execution logs.
+
+---
+
+## 🛠️ Getting Started
 
 ### Prerequisites
 
 Ensure you have **Node.js** (v18 or higher) and **npm** installed.
 
-### Installation
+### Installation & Run
 
 1. Clone the repository:
    ```bash
@@ -39,40 +59,37 @@ Ensure you have **Node.js** (v18 or higher) and **npm** installed.
    cd codeVista
    ```
 
-2. Install dependencies:
+2. Install root monorepo and workspace dependencies:
    ```bash
    npm install
+   npm run install-client
+   npm run install-server
    ```
 
-3. Run the local development server:
+3. Spin up both frontend and backend concurrently:
    ```bash
    npm run dev
    ```
-
-4. Build the application for production:
-   ```bash
-   npm run build
-   ```
+   * Frontend: `http://localhost:5173`
+   * Backend: `http://localhost:5000`
 
 ---
 
-## 📂 Project Structure
+## 🌐 Deployment Instructions
 
-```
-codeVista/
-├── src/
-│   ├── components/       # Reusable layout and navigation components
-│   ├── features/
-│   │   ├── editor/       # Core code visualization engine (AST, interpreter, memory layout)
-│   │   ├── landing/      # Premium SaaS home page
-│   │   ├── dashboard/    # User platform dashboard
-│   │   ├── library/      # Saved code modules repository
-│   │   ├── docs/         # System documentation
-│   │   └── auth/         # Login and signup features
-│   ├── layouts/          # Application shell page structures
-│   ├── index.css         # Styling system configuration
-│   └── main.tsx          # App entry point
-├── tailwind.config.js    # Design tokens & color theme mappings
-├── postcss.config.js     # CSS compilation config
-└── vite.config.ts        # Vite dev server configurations
-```
+### Frontend (Vercel)
+1. Go to [Vercel](https://vercel.com).
+2. Connect your GitHub repository.
+3. Set the **Root Directory** to `client`.
+4. Configure Build settings:
+   * Build Command: `npm run build`
+   * Output Directory: `dist`
+5. Click **Deploy**.
+
+### Backend (Render)
+1. Go to [Render](https://render.com).
+2. Create a new **Web Service**.
+3. Set the **Root Directory** to `server`.
+4. Build Command: `npm install`
+5. Start Command: `node index.js`
+6. Click **Create Web Service**.

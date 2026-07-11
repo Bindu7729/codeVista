@@ -18,7 +18,7 @@ export default function PlaybackControls() {
   const currentStep = timeline[currentStepIndex];
 
   return (
-    <div className="bg-[#07060f] border border-white/[0.04] p-4 rounded-xl flex flex-col gap-4 shrink-0 font-sans">
+    <div className="bg-[#1E293B] border border-slate-800 p-4 rounded-xl flex flex-col gap-4 shrink-0 font-sans">
       
       {/* 1. Playback controls buttons and speed selector row */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -28,7 +28,7 @@ export default function PlaybackControls() {
           <button
             onClick={resetExecution}
             disabled={timeline.length <= 1}
-            className="p-2 border border-white/5 hover:border-violet-500/40 hover:bg-violet-950/25 text-slate-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 border border-slate-700 hover:border-blue-500/40 hover:bg-slate-800 text-[#94A3B8] hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
             title="Restart Execution"
           >
             <RotateCcw className="w-4 h-4" />
@@ -37,7 +37,7 @@ export default function PlaybackControls() {
           <button
             onClick={prevStep}
             disabled={currentStepIndex === 0}
-            className="p-2 border border-white/5 hover:border-violet-500/40 hover:bg-violet-950/25 text-slate-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 border border-slate-700 hover:border-blue-500/40 hover:bg-slate-800 text-[#94A3B8] hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
             title="Step Back"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -46,7 +46,7 @@ export default function PlaybackControls() {
           <button
             onClick={togglePlay}
             disabled={timeline.length <= 1}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 disabled:opacity-55"
+            className="px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] hover:opacity-95 text-white rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 disabled:opacity-55"
             title={isPlaying ? "Pause Autoplay" : "Play Autoplay"}
           >
             {isPlaying ? (
@@ -65,7 +65,7 @@ export default function PlaybackControls() {
           <button
             onClick={nextStep}
             disabled={currentStepIndex === timeline.length - 1}
-            className="p-2 border border-white/5 hover:border-violet-500/40 hover:bg-violet-950/25 text-slate-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 border border-slate-700 hover:border-blue-500/40 hover:bg-slate-800 text-[#94A3B8] hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
             title="Step Forward"
           >
             <ArrowRight className="w-4 h-4" />
@@ -74,17 +74,17 @@ export default function PlaybackControls() {
           <button
             onClick={() => goToStep(timeline.length - 1)}
             disabled={currentStepIndex === timeline.length - 1}
-            className="p-2 border border-white/5 hover:border-violet-500/40 hover:bg-violet-950/25 text-slate-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 border border-slate-700 hover:border-blue-500/40 hover:bg-slate-800 text-[#94A3B8] hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none"
             title="Skip to End"
           >
             <FastForward className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Center/Right: Step Counter & Playback Speed slider */}
+        {/* Center/Right: Step Counter & Playback Speed selector */}
         <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
-          <div className="text-xs font-mono text-slate-400">
-            Step <span className="text-white font-bold">{currentStepIndex + 1}</span> of <span className="text-white font-bold">{timeline.length}</span>
+          <div className="text-xs font-mono text-[#94A3B8]">
+            Step <span className="text-[#F8FAFC] font-bold">{currentStepIndex + 1}</span> of <span className="text-[#F8FAFC] font-bold">{timeline.length}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function PlaybackControls() {
             <select
               value={playbackSpeed}
               onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-              className="bg-[#0c0a18] border border-white/10 rounded-lg text-slate-300 text-xs py-1 px-2.5 outline-none focus:border-purple-500/50 cursor-pointer"
+              className="bg-[#0F172A] border border-slate-800 rounded-lg text-slate-350 text-xs py-1.5 px-2.5 outline-none focus:border-blue-500/50 cursor-pointer"
             >
               <option value="2000">0.5x (Slow)</option>
               <option value="1500">1.0x (Normal)</option>
@@ -112,20 +112,20 @@ export default function PlaybackControls() {
           max={timeline.length - 1}
           value={currentStepIndex}
           onChange={(e) => goToStep(Number(e.target.value))}
-          className="w-full h-1.5 bg-[#0e0a1f] rounded-lg appearance-none cursor-pointer accent-purple-500 outline-none"
+          className="w-full h-1.5 bg-[#0F172A] rounded-lg appearance-none cursor-pointer accent-blue-500 outline-none"
           style={{
-            background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${(currentStepIndex / (timeline.length - 1 || 1)) * 100}%, #0e0a1f ${(currentStepIndex / (timeline.length - 1 || 1)) * 100}%, #0e0a1f 100%)`
+            background: `linear-gradient(to right, #2563EB 0%, #2563EB ${(currentStepIndex / (timeline.length - 1 || 1)) * 100}%, #0F172A ${(currentStepIndex / (timeline.length - 1 || 1)) * 100}%, #0F172A 100%)`
           }}
         />
       </div>
 
       {/* 3. Explanation logger snippet */}
       {currentStep && (
-        <div className="bg-[#05040a] border border-white/[0.02] p-3 rounded-lg text-left font-mono text-xs text-slate-300 leading-normal flex items-start gap-2.5">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-950/20 px-2 py-0.5 rounded shrink-0">
-            Log
+        <div className="bg-[#0F172A] border border-slate-800/40 p-3 rounded-lg text-left font-mono text-xs text-slate-300 leading-normal flex items-start gap-2.5">
+          <span className="text-[9px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-950/20 px-2 py-0.5 rounded shrink-0">
+            Explain
           </span>
-          <span className="text-slate-200">{currentStep.explanation}</span>
+          <span className="text-[#F8FAFC]">{currentStep.explanation}</span>
         </div>
       )}
 

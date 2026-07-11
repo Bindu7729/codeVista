@@ -1,22 +1,10 @@
 import { create } from 'zustand';
-import { generateExecutionTimeline, ExecutionStep } from '../services/codeInterpreter';
-
-const INITIAL_PYTHON_MOCK = `# Paste any operational lines here to see a true visual step tree!
-speed = 120
-complexity = 45
-
-total_overhead = speed + complexity
-visualize_flow(total_overhead)
-
-a = 15
-b = 30
-result = a * b
-for i in range(3):
-    result = result + i
-print(result)`;
+import { generateExecutionTimeline, ExecutionStep, CODE_TEMPLATES } from '../services/codeInterpreter';
 
 interface ExecutionState {
   code: string;
+  language: string;
+  templateId: string;
   timeline: ExecutionStep[];
   currentStepIndex: number;
   isPlaying: boolean;
@@ -26,6 +14,8 @@ interface ExecutionState {
   
   // Actions
   setCode: (code: string) => void;
+  setLanguage: (language: string) => void;
+  setTemplate: (templateId: string) => void;
   runCode: () => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -37,12 +27,18 @@ interface ExecutionState {
   resetExecution: () => void;
 }
 
+const DEFAULT_LANG = 'python';
+const DEFAULT_TEMPLATE = 'binary_search';
+const INITIAL_CODE = CODE_TEMPLATES[DEFAULT_TEMPLATE][DEFAULT_LANG];
+
 export const useExecutionStore = create<ExecutionState>((set, get) => {
   let feedbackTimeout: any = null;
 
   return {
-    code: INITIAL_PYTHON_MOCK,
-    timeline: generateExecutionTimeline(INITIAL_PYTHON_MOCK),
+    code: INITIAL_CODE,
+    language: DEFAULT_LANG,
+    templateId: DEFAULT_TEMPLATE,
+    timeline: generateExecutionTimeline(INITIAL_CODE, DEFAULT_LANG, DEFAULT_TEMPLATE),
     currentStepIndex: 0,
     isPlaying: false,
     playbackSpeed: 1500,
@@ -50,20 +46,36 @@ export const useExecutionStore = create<ExecutionState>((set, get) => {
     feedback: null,
 
     setCode: (code) => {
+      const { language, templateId } = get();
       set({ code });
-      // Regenerate timeline on code changes, resetting playhead
-      const timeline = generateExecutionTimeline(code);
+      const timeline = generateExecutionTimeline(code, language, templateId);
+      set({ timeline, currentStepIndex: 0, isPlaying: false });
+    },
+
+    setLanguage: (language) => {
+      const { templateId } = get();
+      const code = CODE_TEMPLATES[templateId][language] || CODE_TEMPLATES[templateId]['python'] || "";
+      set({ language, code });
+      const timeline = generateExecutionTimeline(code, language, templateId);
+      set({ timeline, currentStepIndex: 0, isPlaying: false });
+    },
+
+    setTemplate: (templateId) => {
+      const { language } = get();
+      const code = CODE_TEMPLATES[templateId][language] || CODE_TEMPLATES[templateId]['python'] || "";
+      set({ templateId, code });
+      const timeline = generateExecutionTimeline(code, language, templateId);
       set({ timeline, currentStepIndex: 0, isPlaying: false });
     },
 
     runCode: () => {
-      const { code } = get();
-      const timeline = generateExecutionTimeline(code);
+      const { code, language, templateId } = get();
+      const timeline = generateExecutionTimeline(code, language, templateId);
       set({ 
         timeline, 
         currentStepIndex: 0, 
         isPlaying: false,
-        feedback: "Compiled code thread. Execution timeline ready."
+        feedback: "Compiled code execution thread successfully."
       });
 
       if (feedbackTimeout) clearTimeout(feedbackTimeout);
@@ -75,7 +87,6 @@ export const useExecutionStore = create<ExecutionState>((set, get) => {
       if (currentStepIndex < timeline.length - 1) {
         set({ currentStepIndex: currentStepIndex + 1 });
       } else {
-        // Loop back or stop autoplay
         set({ isPlaying: false });
       }
     },
@@ -95,12 +106,9 @@ export const useExecutionStore = create<ExecutionState>((set, get) => {
 
     togglePlay: () => {
       const { isPlaying, currentStepIndex, timeline } = get();
-      
-      // If we are at the end, restart from step 0 when playing
       if (!isPlaying && currentStepIndex === timeline.length - 1) {
         set({ currentStepIndex: 0 });
       }
-
       set({ isPlaying: !isPlaying });
     },
 
