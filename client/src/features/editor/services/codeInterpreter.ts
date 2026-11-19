@@ -27,7 +27,7 @@ export const CODE_TEMPLATES: Record<string, Record<string, string>> = {
   bubble_sort: {
     python: `arr = [57, 12, 45, 24, 90, 32]\nn = len(arr)\nfor i in range(n):\n    for j in range(0, n - i - 1):\n        if arr[j] > arr[j + 1]:\n            temp = arr[j]\n            arr[j] = arr[j + 1]\n            arr[j + 1] = temp`,
     javascript: `let arr = [57, 12, 45, 24, 90, 32];\nlet n = arr.length;\nfor (let i = 0; i < n; i++) {\n    for (let j = 0; j < n - i - 1; j++) {\n        if (arr[j] > arr[j + 1]) {\n            let temp = arr[j];\n            arr[j] = arr[j + 1];\n            arr[j + 1] = temp;\n        }\n    }\n}`,
-    java: `int[] arr = {57, 12, 45, 24, 90, 32};\nint n = arr.length;\nfor (int i = 0; i < n; i++) {\n    for (int j = 0; j < n - i - 1; j++) {\n        if (arr[j] > arr[j + 1]) {\n            int temp = arr[j];\n            arr[j] = arr[j + 1];\n            arr[j + 1] = temp;\n        }\n    }\n}`
+    java: `int[] arr = {57, 12, 45, 24, 90, 32};\nint n = arr.length;\nfor (let i = 0; i < n; i++) {\n    for (let j = 0; j < n - i - 1; j++) {\n        if (arr[j] > arr[j + 1]) {\n            int temp = arr[j];\n            arr[j] = arr[j + 1];\n            arr[j + 1] = temp;\n        }\n    }\n}`
   },
   linked_list: {
     python: `class Node:\n    def __init__(self, val):\n        self.val = val\n        self.next = None\n\nhead = Node(10)\nnodeB = Node(20)\nnodeC = Node(30)\nhead.next = nodeB\nnodeB.next = nodeC`,
@@ -41,7 +41,7 @@ export const CODE_TEMPLATES: Record<string, Record<string, string>> = {
   }
 };
 
-export function evaluateExpression(expr: string, env: Record<string, any>, language: string): any {
+export function evaluateExpression(expr: string, env: Record<string, any> = {}, language: string = 'python'): any {
   // Strip comments depending on language
   let cleaned = expr;
   if (language === 'python') {
@@ -79,11 +79,20 @@ export function evaluateExpression(expr: string, env: Record<string, any>, langu
     return inner.split(',').map(item => evaluateExpression(item, env, language));
   }
 
-  // Handle Node creation e.g. Node(10), new Node(10)
-  const nodeMatch = cleaned.match(/^(?:new\s+)?(\w+)\((.+)\)$/);
+  // Return direct reference if variable identifier is in env
+  if (env[cleaned] !== undefined) {
+    return env[cleaned];
+  }
+
+  // Handle Node and TreeNode creation
+  const nodeMatch = cleaned.match(/^(?:new\s+)?(Node|TreeNode)\((.+)\)$/);
   if (nodeMatch) {
+    const className = nodeMatch[1];
     const arg = evaluateExpression(nodeMatch[2], env, language);
-    return { val: arg, left: null, right: null, next: null };
+    if (className === 'TreeNode') {
+      return { val: arg, left: null, right: null };
+    }
+    return { val: arg, next: null };
   }
 
   // Detect Python floor division //
@@ -95,9 +104,7 @@ export function evaluateExpression(expr: string, env: Record<string, any>, langu
   keys.forEach(k => {
     const regex = new RegExp(`\\b${k}\\b`, 'g');
     let val = env[k];
-    if (Array.isArray(val)) {
-      val = JSON.stringify(val);
-    } else if (val && typeof val === 'object') {
+    if (Array.isArray(val) || (val && typeof val === 'object')) {
       val = JSON.stringify(val);
     }
     evalStr = evalStr.replace(regex, val);
@@ -106,9 +113,10 @@ export function evaluateExpression(expr: string, env: Record<string, any>, langu
   try {
     evalStr = evalStr.replace(/\bNone\b/g, 'null');
     // Supply a len and str helper context
-    let result = new Function("len", "str", `return (${evalStr})`)(
+    let result = new Function("len", "str", "Math", `return (${evalStr})`)(
       (x: any) => Array.isArray(x) ? x.length : 0,
-      (x: any) => String(x)
+      (x: any) => String(x),
+      Math
     );
     if (hasFloorDiv && typeof result === 'number') {
       result = Math.floor(result);
@@ -134,12 +142,12 @@ export function buildTreeStructure(obj: any, x: number, y: number, offset: numbe
   if (obj.left) {
     const childId = `node_${idRef.val}`;
     edges.push({ from: currentId, to: childId });
-    buildTreeStructure(obj.left, x - offset, y + 45, offset / 2, nodes, edges, idRef);
+    buildTreeStructure(obj.left, x - offset, y + 45, Math.max(offset / 2, 20), nodes, edges, idRef);
   }
   if (obj.right) {
     const childId = `node_${idRef.val}`;
     edges.push({ from: currentId, to: childId });
-    buildTreeStructure(obj.right, x + offset, y + 45, offset / 2, nodes, edges, idRef);
+    buildTreeStructure(obj.right, x + offset, y + 45, Math.max(offset / 2, 20), nodes, edges, idRef);
   }
 }
 
@@ -156,6 +164,16 @@ export function buildListStructure(obj: any, x: number, y: number, nodes: any[],
   }
 }
 
+interface BlockFrame {
+  kind: 'loop' | 'if';
+  type?: 'while' | 'for';
+  startPc: number;
+  indent: number;
+  varName?: string;
+  limitVal?: number;
+  executed?: boolean;
+}
+
 // ----------------------------------------------------
 // FULL STATEFUL RUNTIME INTERPRETER VM
 // ----------------------------------------------------
@@ -167,12 +185,11 @@ export function generateExecutionTimeline(code: string, language: string, templa
   let stdout = "";
   
   let pc = 0;
-  let maxInstructions = 120; // safe loops limit
+  const maxInstructions = 1000; // safe loops limit
   let instructionCount = 0;
 
-  // VM Jump and block frames stacks
-  const loopStack: { type: 'while' | 'for'; startPc: number; indent: number; varName?: string; limitExpr?: string; limitVal?: number }[] = [];
-  const ifStack: { indent: number; executed: boolean }[] = [];
+  // Unified lexical block frames stack
+  const blockStack: BlockFrame[] = [];
 
   const getIndent = (str: string) => {
     const match = str.match(/^(\s*)/);
@@ -181,8 +198,8 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
   const findActiveWidget = (currentEnv: Record<string, any>): ExecutionStep['widgetData'] => {
     // 1. Detect BST Trees
-    for (const [key, val] of Object.entries(currentEnv)) {
-      if (val && typeof val === 'object' && val.val !== undefined && (val.left !== undefined || val.right !== undefined)) {
+    for (const [, val] of Object.entries(currentEnv)) {
+      if (val && typeof val === 'object' && val.val !== undefined && ('left' in val || 'right' in val)) {
         const nodes: any[] = [];
         const edges: any[] = [];
         buildTreeStructure(val, 170, 25, 70, nodes, edges);
@@ -191,8 +208,8 @@ export function generateExecutionTimeline(code: string, language: string, templa
     }
 
     // 2. Detect Linked Lists
-    for (const [key, val] of Object.entries(currentEnv)) {
-      if (val && typeof val === 'object' && val.val !== undefined && val.next !== undefined) {
+    for (const [, val] of Object.entries(currentEnv)) {
+      if (val && typeof val === 'object' && val.val !== undefined && 'next' in val) {
         const nodes: any[] = [];
         const edges: any[] = [];
         buildListStructure(val, 50, 70, nodes, edges);
@@ -215,7 +232,7 @@ export function generateExecutionTimeline(code: string, language: string, templa
             pointers[k] = v;
           }
         });
-        return { type: 'array', values: val, pointers };
+        return { type: 'array', values: [...val], pointers };
       }
     }
 
@@ -239,8 +256,27 @@ export function generateExecutionTimeline(code: string, language: string, templa
     return { stack, heap };
   };
 
-  while (pc < lines.length && instructionCount < maxInstructions) {
+  while ((pc < lines.length || blockStack.length > 0) && instructionCount < maxInstructions) {
     instructionCount++;
+
+    // End-of-file Python / block loop cycling
+    if (pc >= lines.length) {
+      if (blockStack.length > 0) {
+        const popped = blockStack.pop()!;
+        if (popped.kind === 'loop') {
+          if (popped.type === 'for' && popped.varName) {
+            env[popped.varName] = (env[popped.varName] || 0) + 1;
+          }
+          pc = popped.startPc;
+          continue;
+        } else {
+          continue;
+        }
+      } else {
+        break;
+      }
+    }
+
     const lineText = lines[pc];
     const trimmed = lineText.trim();
     const currentIndent = getIndent(lineText);
@@ -256,30 +292,35 @@ export function generateExecutionTimeline(code: string, language: string, templa
     // ----------------------------------------------------
 
     // Python block exits checking indentations
-    if (language === 'python' && loopStack.length > 0) {
-      const topLoop = loopStack[loopStack.length - 1];
-      if (currentIndent <= topLoop.indent && trimmed !== '}' && !trimmed.startsWith('else:') && !trimmed.startsWith('elif ')) {
-        const popped = loopStack.pop()!;
-        // If it's a Python for loop, increment iteration variable
-        if (popped.type === 'for' && popped.varName) {
-          env[popped.varName] = (env[popped.varName] || 0) + 1;
+    if (language === 'python' && blockStack.length > 0) {
+      const topBlock = blockStack[blockStack.length - 1];
+      if (currentIndent <= topBlock.indent && trimmed !== '}' && !trimmed.startsWith('else:') && !trimmed.startsWith('elif ')) {
+        const popped = blockStack.pop()!;
+        if (popped.kind === 'loop') {
+          if (popped.type === 'for' && popped.varName) {
+            env[popped.varName] = (env[popped.varName] || 0) + 1;
+          }
+          pc = popped.startPc;
+          continue;
+        } else {
+          // Finished if block in python, continue re-checking current line against next outer block
+          continue;
         }
-        pc = popped.startPc;
-        continue;
       }
     }
 
     // JS/Java closing braces exits
     if (trimmed === '}') {
-      if (loopStack.length > 0) {
-        const popped = loopStack.pop()!;
-        if (popped.type === 'for' && popped.varName) {
-          env[popped.varName] = (env[popped.varName] || 0) + 1;
+      if (blockStack.length > 0) {
+        const popped = blockStack.pop()!;
+        if (popped.kind === 'loop') {
+          if (popped.type === 'for' && popped.varName) {
+            env[popped.varName] = (env[popped.varName] || 0) + 1;
+          }
+          pc = popped.startPc;
+        } else {
+          pc++;
         }
-        pc = popped.startPc;
-      } else if (ifStack.length > 0) {
-        ifStack.pop();
-        pc++;
       } else {
         pc++;
       }
@@ -291,11 +332,11 @@ export function generateExecutionTimeline(code: string, language: string, templa
     // ----------------------------------------------------
     const ifMatch = trimmed.match(/^if\s+(.+):?$/) || trimmed.match(/^if\s*\((.+)\)\s*\{?$/);
     if (ifMatch) {
-      const condExpr = ifMatch[1].replace(/\{$/, '').trim();
+      const condExpr = ifMatch[1].replace(/[:{]$/, '').trim();
       const condition = evaluateExpression(condExpr, env, language);
 
       if (condition) {
-        ifStack.push({ indent: currentIndent, executed: true });
+        blockStack.push({ kind: 'if', startPc: pc, indent: currentIndent, executed: true });
         const { stack, heap } = mapStackAndHeap(env);
         steps.push({
           lineNum: pc + 1,
@@ -310,16 +351,24 @@ export function generateExecutionTimeline(code: string, language: string, templa
         });
         pc++;
       } else {
-        ifStack.push({ indent: currentIndent, executed: false });
+        blockStack.push({ kind: 'if', startPc: pc, indent: currentIndent, executed: false });
         // Jump past if branch body
         let targetPc = pc + 1;
+        let depth = 1;
         while (targetPc < lines.length) {
           const nextTrimmed = lines[targetPc].trim();
           const nextIndent = getIndent(lines[targetPc]);
           if (language === 'python') {
             if (nextTrimmed && nextIndent <= currentIndent) break;
           } else {
-            if (nextTrimmed === '}' || nextTrimmed.startsWith('else')) break;
+            if (nextTrimmed.includes('{')) depth++;
+            if (nextTrimmed === '}' || nextTrimmed.endsWith('}')) {
+              depth--;
+              if (depth === 0) {
+                targetPc++;
+                break;
+              }
+            }
           }
           targetPc++;
         }
@@ -330,25 +379,31 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
     const elseMatch = trimmed.startsWith('else:') || trimmed.startsWith('else ') || trimmed.startsWith('elif ') || trimmed.startsWith('else{');
     if (elseMatch) {
-      const topIf = ifStack[ifStack.length - 1];
-      // If the preceding 'if' branch was executed, skip this else block
-      if (topIf && topIf.executed) {
+      const topBlock = blockStack[blockStack.length - 1];
+      if (topBlock && topBlock.kind === 'if' && topBlock.executed) {
         let targetPc = pc + 1;
+        let depth = 1;
         while (targetPc < lines.length) {
           const nextTrimmed = lines[targetPc].trim();
           const nextIndent = getIndent(lines[targetPc]);
           if (language === 'python') {
             if (nextTrimmed && nextIndent <= currentIndent) break;
           } else {
-            if (nextTrimmed === '}') break;
+            if (nextTrimmed.includes('{')) depth++;
+            if (nextTrimmed === '}' || nextTrimmed.endsWith('}')) {
+              depth--;
+              if (depth === 0) {
+                targetPc++;
+                break;
+              }
+            }
           }
           targetPc++;
         }
-        pc = targetPc + (language === 'python' ? 0 : 1);
-        ifStack.pop();
+        pc = targetPc;
+        blockStack.pop();
       } else {
-        // Execute this else branch
-        if (topIf) topIf.executed = true;
+        if (topBlock && topBlock.kind === 'if') topBlock.executed = true;
         const { stack, heap } = mapStackAndHeap(env);
         steps.push({
           lineNum: pc + 1,
@@ -371,11 +426,11 @@ export function generateExecutionTimeline(code: string, language: string, templa
     // ----------------------------------------------------
     const whileMatch = trimmed.match(/^while\s+(.+):?$/) || trimmed.match(/^while\s*\((.+)\)\s*\{?$/);
     if (whileMatch) {
-      const condExpr = whileMatch[1].replace(/\{$/, '').trim();
+      const condExpr = whileMatch[1].replace(/[:{]$/, '').trim();
       const condition = evaluateExpression(condExpr, env, language);
 
       if (condition) {
-        loopStack.push({ type: 'while', startPc: pc, indent: currentIndent });
+        blockStack.push({ kind: 'loop', type: 'while', startPc: pc, indent: currentIndent });
         const { stack, heap } = mapStackAndHeap(env);
         steps.push({
           lineNum: pc + 1,
@@ -392,22 +447,30 @@ export function generateExecutionTimeline(code: string, language: string, templa
       } else {
         // Jump past loop body
         let targetPc = pc + 1;
+        let depth = 1;
         while (targetPc < lines.length) {
           const nextTrimmed = lines[targetPc].trim();
           const nextIndent = getIndent(lines[targetPc]);
           if (language === 'python') {
             if (nextTrimmed && nextIndent <= currentIndent) break;
           } else {
-            if (nextTrimmed === '}') break;
+            if (nextTrimmed.includes('{')) depth++;
+            if (nextTrimmed === '}' || nextTrimmed.endsWith('}')) {
+              depth--;
+              if (depth === 0) {
+                targetPc++;
+                break;
+              }
+            }
           }
           targetPc++;
         }
-        pc = targetPc + (language === 'python' ? 0 : 1);
+        pc = targetPc;
       }
       continue;
     }
 
-    // Simple Python range loop parser e.g. for i in range(n)
+    // Simple Python range loop parser e.g. for i in range(n) or for j in range(0, n - i - 1)
     const pyForMatch = trimmed.match(/^for\s+([\w_]+)\s+in\s+range\((.+)\):$/);
     if (pyForMatch) {
       const iteratorVar = pyForMatch[1];
@@ -428,7 +491,7 @@ export function generateExecutionTimeline(code: string, language: string, templa
       }
 
       if (env[iteratorVar] < endVal) {
-        loopStack.push({ type: 'for', startPc: pc, indent: currentIndent, varName: iteratorVar, limitVal: endVal });
+        blockStack.push({ kind: 'loop', type: 'for', startPc: pc, indent: currentIndent, varName: iteratorVar, limitVal: endVal });
         const { stack, heap } = mapStackAndHeap(env);
         steps.push({
           lineNum: pc + 1,
@@ -463,23 +526,14 @@ export function generateExecutionTimeline(code: string, language: string, templa
       const iteratorVar = jsForMatch[1];
       const startExpr = jsForMatch[2].trim();
       const condExpr = jsForMatch[3].trim();
-      const postExpr = jsForMatch[4].trim();
 
       if (env[iteratorVar] === undefined) {
         env[iteratorVar] = evaluateExpression(startExpr, env, language);
-      } else {
-        // Increment iterator var using postExpr context
-        if (postExpr.includes('++')) env[iteratorVar]++;
-        else if (postExpr.includes('--')) env[iteratorVar]--;
-        else {
-          const assignVal = postExpr.match(/=\s*(.+)$/);
-          if (assignVal) env[iteratorVar] = evaluateExpression(assignVal[1], env, language);
-        }
       }
 
       const condition = evaluateExpression(condExpr, env, language);
       if (condition) {
-        loopStack.push({ type: 'for', startPc: pc, indent: currentIndent, varName: iteratorVar });
+        blockStack.push({ kind: 'loop', type: 'for', startPc: pc, indent: currentIndent, varName: iteratorVar });
         const { stack, heap } = mapStackAndHeap(env);
         steps.push({
           lineNum: pc + 1,
@@ -496,12 +550,20 @@ export function generateExecutionTimeline(code: string, language: string, templa
       } else {
         delete env[iteratorVar];
         let targetPc = pc + 1;
+        let depth = 1;
         while (targetPc < lines.length) {
           const nextTrimmed = lines[targetPc].trim();
-          if (nextTrimmed === '}') break;
+          if (nextTrimmed.includes('{')) depth++;
+          if (nextTrimmed === '}' || nextTrimmed.endsWith('}')) {
+            depth--;
+            if (depth === 0) {
+              targetPc++;
+              break;
+            }
+          }
           targetPc++;
         }
-        pc = targetPc + 1;
+        pc = targetPc;
       }
       continue;
     }
@@ -512,21 +574,29 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
     // Handle break/continue statements
     if (trimmed === 'break' || trimmed === 'break;') {
-      if (loopStack.length > 0) {
-        const popped = loopStack.pop()!;
-        delete env[popped.varName || ''];
+      if (blockStack.length > 0) {
+        const popped = blockStack.pop()!;
+        if (popped.varName) delete env[popped.varName];
         let targetPc = pc + 1;
+        let depth = 1;
         while (targetPc < lines.length) {
           const nextTrimmed = lines[targetPc].trim();
           const nextIndent = getIndent(lines[targetPc]);
           if (language === 'python') {
             if (nextTrimmed && nextIndent <= popped.indent) break;
           } else {
-            if (nextTrimmed === '}') break;
+            if (nextTrimmed.includes('{')) depth++;
+            if (nextTrimmed === '}' || nextTrimmed.endsWith('}')) {
+              depth--;
+              if (depth === 0) {
+                targetPc++;
+                break;
+              }
+            }
           }
           targetPc++;
         }
-        pc = targetPc + (language === 'python' ? 0 : 1);
+        pc = targetPc;
       } else {
         pc++;
       }
@@ -555,8 +625,8 @@ export function generateExecutionTimeline(code: string, language: string, templa
       continue;
     }
 
-    // Handle assignments
-    const assignMatch = trimmed.match(/^(?:let|var|const|int|float|double|String|Node|TreeNode)?\s*([\w_]+(?:\.[\w_]+)?)\s*=\s*(.+);?$/);
+    // Handle assignments (variables, nested properties, array indexing)
+    const assignMatch = trimmed.match(/^(?:let|var|const|int|float|double|String|Node|TreeNode)?\s*([\w_]+(?:\[[^\]]+\]|(?:\.[\w_]+)+)?)\s*=\s*(.+);?$/);
     if (assignMatch) {
       const targetVar = assignMatch[1];
       const expr = assignMatch[2].trim();
@@ -566,9 +636,12 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
       if (targetVar.includes('.')) {
         const parts = targetVar.split('.');
-        const parentObj = env[parts[0]];
-        if (parentObj && typeof parentObj === 'object') {
-          parentObj[parts[1]] = val;
+        let current = env[parts[0]];
+        for (let i = 1; i < parts.length - 1; i++) {
+          if (current) current = current[parts[i]];
+        }
+        if (current && typeof current === 'object') {
+          current[parts[parts.length - 1]] = val;
           expl = `Update node property: ${targetVar} = ${val && val.val !== undefined ? val.val : JSON.stringify(val)}`;
           changedVars = [parts[0]];
         }
@@ -677,4 +750,6 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
   return steps;
 }
+
+
 
