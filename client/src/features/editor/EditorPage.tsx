@@ -15,6 +15,7 @@ import VisualizationCanvas from './components/VisualizationCanvas';
 import PlaybackControls from './components/PlaybackControls';
 import MemoryVisualizer from './components/MemoryVisualizer';
 import LanguageSelector from './components/LanguageSelector';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function EditorPage() {
   const {
@@ -28,7 +29,9 @@ export default function EditorPage() {
     setCode,
     runCode,
     nextStep,
+    prevStep,
     togglePlay,
+    resetExecution,
     triggerFeedback
   } = useExecutionStore();
 
@@ -44,6 +47,31 @@ export default function EditorPage() {
     }
     return () => clearInterval(simTimer);
   }, [isPlaying, playbackSpeed, nextStep]);
+
+  // --- GLOBAL KEYBOARD SHORTCUTS ENGINE ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = (document.activeElement?.tagName || '').toLowerCase();
+      if (activeTag === 'textarea' || activeTag === 'input') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        nextStep();
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        prevStep();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        resetExecution();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlay, nextStep, prevStep, resetExecution]);
 
   // Code Highlighting Token Matrix Line Parser
   const lines = code.split('\n');
@@ -151,13 +179,19 @@ export default function EditorPage() {
             <div className="p-6 space-y-4 flex flex-col flex-grow overflow-y-auto">
               
               {/* Node Relationships Tree Map */}
-              <VisualizationCanvas />
+              <ErrorBoundary fallbackTitle="Visualizer Canvas Error" onReset={resetExecution}>
+                <VisualizationCanvas />
+              </ErrorBoundary>
 
               {/* Scrubber Playback Controls */}
-              <PlaybackControls />
+              <ErrorBoundary fallbackTitle="Playback Controls Error">
+                <PlaybackControls />
+              </ErrorBoundary>
 
               {/* Stack & Heap Telemetry */}
-              <MemoryVisualizer />
+              <ErrorBoundary fallbackTitle="Memory Telemetry Error">
+                <MemoryVisualizer />
+              </ErrorBoundary>
 
             </div>
 
