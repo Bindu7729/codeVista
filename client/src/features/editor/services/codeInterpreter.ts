@@ -41,7 +41,7 @@ export const CODE_TEMPLATES: Record<string, Record<string, string>> = {
   }
 };
 
-function evaluateExpression(expr: string, env: Record<string, any>, language: string): any {
+export function evaluateExpression(expr: string, env: Record<string, any>, language: string): any {
   // Strip comments depending on language
   let cleaned = expr;
   if (language === 'python') {
@@ -126,7 +126,7 @@ function evaluateExpression(expr: string, env: Record<string, any>, language: st
 }
 
 // Tree node recursive visual positioning layout
-function buildTreeStructure(obj: any, x: number, y: number, offset: number, nodes: any[], edges: any[], idRef = { val: 0 }) {
+export function buildTreeStructure(obj: any, x: number, y: number, offset: number, nodes: any[], edges: any[], idRef = { val: 0 }) {
   if (!obj || obj.val === undefined) return;
   const currentId = `node_${idRef.val++}`;
   nodes.push({ id: currentId, val: obj.val, x, y });
@@ -144,7 +144,7 @@ function buildTreeStructure(obj: any, x: number, y: number, offset: number, node
 }
 
 // Linked list node visual chain alignment
-function buildListStructure(obj: any, x: number, y: number, nodes: any[], edges: any[], idRef = { val: 0 }) {
+export function buildListStructure(obj: any, x: number, y: number, nodes: any[], edges: any[], idRef = { val: 0 }) {
   if (!obj || obj.val === undefined) return;
   const currentId = `node_${idRef.val++}`;
   nodes.push({ id: currentId, val: obj.val, x, y });
@@ -677,3 +677,4 @@ export function generateExecutionTimeline(code: string, language: string, templa
 
   return steps;
 }
+
