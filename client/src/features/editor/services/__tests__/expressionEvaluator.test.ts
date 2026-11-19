@@ -66,10 +66,10 @@ describe('evaluateExpression', () => {
 
     it('evaluates Node and TreeNode instantiations', () => {
       const node = evaluateExpression('Node(10)', {}, 'python');
-      expect(node).toEqual({ val: 10, left: null, right: null, next: null });
+      expect(node).toEqual({ val: 10, next: null });
 
       const jsNode = evaluateExpression('new TreeNode(40)', {}, 'javascript');
-      expect(jsNode).toEqual({ val: 40, left: null, right: null, next: null });
+      expect(jsNode).toEqual({ val: 40, left: null, right: null });
     });
   });
 
@@ -83,3 +83,4 @@ describe('evaluateExpression', () => {
     });
   });
 });
+
