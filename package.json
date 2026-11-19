@@ -1,20 +1,24 @@
 {
-  "name": "codevista-monorepo",
-  "private": true,
-  "workspaces": [
-    "client",
-    "server"
-  ],
-  "scripts": {
-    "install-client": "cd client && npm install",
-    "install-server": "cd server && npm install",
-    "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && node index.js",
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "build:client": "cd client && npm run build",
-    "build:server": "echo 'No backend build needed'"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+    "name":  "codevista-monorepo",
+    "private":  true,
+    "workspaces":  [
+                       "client",
+                       "server"
+                   ],
+    "scripts":  {
+                    "install-client":  "cd client && npm install",
+                    "install-server":  "cd server && npm install",
+                    "dev:client":  "cd client && npm run dev",
+                    "dev:server":  "cd server && node index.js",
+                    "dev":  "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+                    "build:client":  "cd client && npm run build",
+                    "build:server":  "echo 'No backend build needed'",
+                    "test:client":  "cd client && npm test",
+                    "test:server":  "cd server && npm test",
+                    "test":  "npm run test:client && npm run test:server"
+                },
+    "devDependencies":  {
+                            "concurrently":  "^8.2.2"
+                        }
 }
+
