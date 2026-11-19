@@ -1,4 +1,5 @@
-# CodeVista 🚀💻
+# CodeVista ??
+
 > **Visualize. Understand. Master Programming.**
 >
 > An advanced, next-generation interactive programming visualization platform that transforms source code into real-time visual experiences, helping developers and students master algorithms, data structures, and program execution through step-by-step animations.
@@ -6,15 +7,20 @@
 ---
 
 <p align="center">
-  <a href="https://client-iota-olive-48.vercel.app">
-    <img src="https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+  <a href="https://github.com/Bindu7729/codeVista/actions/workflows/ci.yml">
+    <img src="https://github.com/Bindu7729/codeVista/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline" />
   </a>
+  <img src="https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=black" alt="React 18" />
+  <img src="https://img.shields.io/badge/TypeScript-5.2-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Vitest-2.1-729B1B?logo=vitest&logoColor=white" alt="Vitest" />
+  <img src="https://img.shields.io/badge/Express-5.2-000000?logo=express&logoColor=white" alt="Express" />
   <a href="https://github.com/Bindu7729/codeVista">
-    <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+    <img src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white" alt="GitHub" />
   </a>
 </p>
 
-## 📋 Project Overview
+## ?? Project Overview
 
 **CodeVista** is a full-stack educational web application designed to visualize how programs execute internally. By parsing and executing code step-by-step in a stateful virtual environment, CodeVista translates linear code statements into rich, animated visual representations of standard data structures (Arrays, Trees, Lists, Stacks, Queues, Graphs).
 
@@ -23,44 +29,69 @@ Traditional debuggers are complex and lack visual context, while static code vis
 
 ---
 
-## ✨ Key Features
+## ? Key Features
 
-* 💻 **Multi-Language Sandbox:** Rich code editing powered by Monaco Editor supporting **JavaScript**, **TypeScript**, **Python**, and **Java**.
-* 🧠 **Stateful Execution VM:** Custom interpreter that tracks control structures (loops, branching) and evaluates variables step-by-step.
-* 📊 **Dynamic Data Structure Canvas:** Animated SVG representations with real-time updates for arrays, stacks, queues, graphs, and linked lists.
-* 🌳 **Tree & Graph Visualization:** Traverses node references dynamically, illustrating complex relationships and recursive paths (e.g. BST Insertions).
-* 🔍 **Algorithm Simulations:** Track pointers (e.g., `low`, `high`, `mid` in Binary Search) as they shift position along the index line.
-* ⚡ **Sorting Animations:** Watch elements dynamically swap values step-by-step with visual feedback on indices.
-* 📈 **Execution Dashboard & Memory Frames:** Inspect local scope stacks, heap references, call stack pointers, and console logs.
-* 🎨 **Premium Modern Design:** A dark-themed, glassmorphic layout enhanced with Framer Motion transitions, mouse-glow effects, and floating digital particles.
+* ?? **Multi-Language Sandbox:** Interactive code editing supporting **JavaScript**, **TypeScript**, **Python**, and **Java**.
+* ?? **Stateful Execution VM:** Custom interpreter that tracks control structures (loops, branching) and evaluates variables step-by-step.
+* ?? **Dynamic Data Structure Canvas:** Animated SVG representations with real-time updates for arrays, stacks, queues, graphs, and linked lists.
+* ?? **Tree & Graph Visualization:** Traverses node references dynamically, illustrating complex relationships and recursive paths (e.g. BST Insertions).
+* ?? **Algorithm Simulations:** Track pointers (e.g., `low`, `high`, `mid` in Binary Search) as they shift position along the index line.
+* ?? **Sorting Animations:** Watch elements dynamically swap values step-by-step with visual feedback on indices.
+* ?? **Execution Dashboard & Memory Frames:** Inspect local scope stacks, heap references, call stack pointers, and console logs.
+* ?? **Keyboard Controls:** Spacebar to toggle autoplay, Arrow keys to step forward/backward, and `R` to reset.
+* ??? **Fault Tolerant Architecture:** React Error Boundaries prevent visualizer crashes on edge-case inputs.
+* ?? **Premium Modern Design:** A dark-themed, glassmorphic layout enhanced with Framer Motion transitions, mouse-glow effects, and floating digital particles.
 
 ---
 
-## 🛠️ Technology Stack
+## ??? Technology Stack
 
 ### Frontend
-* **React 19** & **TypeScript** (Core framework & typings)
+* **React 18** & **TypeScript** (Core framework & typings)
 * **Vite** (Next-generation fast asset bundler)
 * **Tailwind CSS** (Utility styling & slate design themes)
 * **Framer Motion** (Smooth structural visual layout animations)
 * **Zustand** (Ultra-lightweight global state management)
-* **Monaco Editor** (High-fidelity editor experience)
+* **Vitest & Testing Library** (Automated component and VM unit test suites)
 
 ### Backend
-* **Node.js** & **Express.js** (Server layer orchestrating code compilations and metrics)
+* **Node.js** & **Express 5** (Modular server layer orchestrating code execution and snippet catalogs)
+* **Jest & Supertest** (End-to-end API integration testing)
 
 ---
 
-## 🎨 Core Modules
+## ??? Architecture
 
-1. **🏠 Landing Page:** Premium landing portal featuring cursor spotlights, parallax scroll indicators, floating code symbols, and dynamic statistics blocks.
-2. **💻 Interactive Editor:** Split-pane editor allowing users to toggle code, customize playback speeds, step through loops, and select templates.
-3. **🧠 Visualization Engine:** Stateful VM resolving arithmetic, references, swaps, and mutations, updating variables step-by-step.
-4. **📈 Execution Dashboard:** Multi-column diagnostics monitoring stack scopes, heap allocations, and print logs.
+```
+codeVista/
++-- client/
+�   +-- src/
+�   �   +-- components/       # Global layout panels & app shells
+�   �   +-- features/
+�   �   �   +-- editor/       # VM interpreter, visual canvas, memory telemetry
+�   �   �   �   +-- components/ # VisualizationCanvas, PlaybackControls, MemoryVisualizer, ErrorBoundary
+�   �   �   �   +-- services/   # AST code interpreter VM & expression evaluator
+�   �   �   �   +-- store/      # Zustand execution state machine
+�   �   �   +-- landing/      # Interactive landing components & particle widgets
+�   �   �   +-- library/      # Preloaded algorithm selectors
+�   �   +-- App.tsx           # Route router mappings
+�   �   +-- main.tsx          # React client entry point
+�   +-- vitest.config.ts      # Vitest configuration with jsdom
+�   +-- package.json
+�
++-- server/
+�   +-- __tests__/            # Supertest API endpoint test suite
+�   +-- app.js                # Express app configuration & middleware
+�   +-- index.js              # Service entrypoint
+�   +-- package.json
+�
++-- .github/workflows/ci.yml  # GitHub Actions CI matrix workflow
++-- package.json              # Monorepo workspace configuration
+```
 
 ---
 
-## 🚀 Quick Start
+## ?? Quick Start
 
 ### 1. Prerequisites
 Ensure you have Node.js (v18+) and npm installed.
@@ -71,8 +102,7 @@ git clone https://github.com/Bindu7729/codeVista.git
 cd codeVista
 ```
 
-### 3. Install Workspaces Dependencies
-This project uses npm workspaces to coordinate client and server:
+### 3. Install Monorepo Dependencies
 ```bash
 npm install
 ```
@@ -88,71 +118,38 @@ npm run dev
 
 ---
 
-## 📦 Commands Reference
+## ?? Testing
 
-| Command | Action |
-| :--- | :--- |
-| `npm run dev` | Start development servers for both client and server concurrently |
-| `npm run build` | Compile and bundle production assets for client & server |
-| `npm run dev:client` | Start frontend client development server |
-| `npm run dev:server` | Start backend server development server |
-| `npm run build:client` | Build the production client bundle |
-| `npm run preview` | Run local preview server on compiled client assets |
+CodeVista includes a comprehensive test suite across the client and server:
 
----
+```bash
+# Run all tests (client Vitest + server Jest)
+npm test
 
-## 🏗️ Project Structure
+# Run client tests only
+npm run test:client
 
-```
-codeVista/
-├── client/
-│   ├── public/             # Static public assets & icons
-│   ├── src/
-│   │   ├── components/     # Global layout panels & app shells
-│   │   ├── features/
-│   │   │   ├── editor/     # Monaco sandbox, VM engines, visual canvas
-│   │   │   ├── landing/    # Interactive landing components & particle widgets
-│   │   │   └── library/    # Preloaded algorithm selectors
-│   │   ├── store/          # Zustand store definitions
-│   │   ├── App.tsx         # Route router mappings
-│   │   └── main.tsx        # React client entry point
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── server/
-│   ├── src/                # Express controllers & execution handlers
-│   ├── index.js            # Node service entry point
-│   └── package.json
-│
-├── docs/                   # Product documentation guides
-├── package.json            # Workspaces configuration root
-└── README.md
+# Run server tests only
+npm run test:server
+
+# Build production assets
+npm run build:client
 ```
 
 ---
 
-## 📸 Screenshots
+## ?? API Endpoints
 
-### 1. Landing Page Portal
-![Landing Page Screenshot](docs/screenshots/landing_page.png)
-*Featuring mouse spotlight tracking, floating binary particles, and modern call-to-actions.*
-
-### 2. Interactive Code Editor & Canvas
-![Editor Screenshot](docs/screenshots/visualizer_canvas.png)
-*Execution tracing window animating active pointer indices and updating stack telemetry values.*
-
----
-
-## 🎯 Future Enhancements
-
-* **🤖 AI Explanations:** Integrate LLM pipelines to explain what code branches are doing at each step of the trace.
-* **🌐 Shared Visual Sessions:** Allow collaborative workspaces where multiple developers can trace code steps together in real-time.
-* **🏆 Competitive Visual Arena:** Interactive game challenges where users must write loops to match specific sorting traces.
-* **☁️ Cloud Compile Sandbox:** Expand compilers to support compiled runtimes like C++ and Go.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/trace-status` | Heartbeat health check and supported runtime environments |
+| `GET` | `/api/snippets` | Catalog of available algorithm templates with complexity metadata |
+| `GET` | `/api/snippets/:id` | Detailed algorithm template by ID |
+| `POST` | `/api/execute` | Compiles user code into sequential execution trace steps |
 
 ---
 
-## 📄 License
+## ?? License
 This project is developed for educational and portfolio purposes.
 
 ---
